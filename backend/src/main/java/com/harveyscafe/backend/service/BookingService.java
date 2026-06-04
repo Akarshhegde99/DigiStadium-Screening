@@ -29,9 +29,7 @@ public class BookingService {
     public final static double PRICE_PER_TABLE = 499.0;
 
     @Transactional
-    public Booking createBooking(BookingRequestDTO request) {
-        User user = userRepository.findByPhone(request.getPhone())
-                .orElseGet(() -> userRepository.save(new User(null, request.getName(), request.getPhone())));
+    public Booking createBooking(BookingRequestDTO request, User user) {
 
         MatchSession match = matchRepository.findById(request.getMatchId())
                 .orElseThrow(() -> new RuntimeException("Match not found"));

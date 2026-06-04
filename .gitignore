@@ -1,0 +1,20 @@
+# Maven
+backend/target/
+*.class
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# IDE / OS / Local envs
+.idea/
+.vscode/
+.DS_Store
+*.log
+.env.local
+.env.*.local
+
+# Agent plans
+implementation_plan.md
+task.md
+walkthrough.md

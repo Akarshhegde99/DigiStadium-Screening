@@ -34,13 +34,29 @@ public class AppController {
 
     @GetMapping("/matches")
     public List<MatchSession> getUpcomingMatches() {
-        return matchRepository.findByStatus("UPCOMING");
+        return matchRepository.findAll();
+    }
+
+    @GetMapping("/bookings/my-bookings")
+    public ResponseEntity<?> getMyBookings() {
+        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof com.harveyscafe.backend.model.User) {
+            com.harveyscafe.backend.model.User user = (com.harveyscafe.backend.model.User) principal;
+            List<Booking> bookings = bookingRepository.findByUserId(user.getId());
+            return ResponseEntity.ok(bookings);
+        }
+        return ResponseEntity.status(401).body("Unauthorized: Please log in to view bookings.");
     }
 
     @PostMapping("/bookings/create")
-    public ResponseEntity<Booking> createBooking(@RequestBody BookingRequestDTO request) {
-        Booking booking = bookingService.createBooking(request);
-        return ResponseEntity.ok(booking);
+    public ResponseEntity<?> createBooking(@RequestBody BookingRequestDTO request) {
+        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof com.harveyscafe.backend.model.User) {
+            com.harveyscafe.backend.model.User user = (com.harveyscafe.backend.model.User) principal;
+            Booking booking = bookingService.createBooking(request, user);
+            return ResponseEntity.ok(booking);
+        }
+        return ResponseEntity.status(401).body("Unauthorized: Please log in to book.");
     }
 
     @GetMapping("/bookings/{id}")

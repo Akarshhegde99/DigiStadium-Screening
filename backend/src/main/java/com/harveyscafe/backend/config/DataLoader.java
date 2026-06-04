@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -18,46 +18,41 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        matchRepository.deleteAll();
-        System.out.println("Loading initial match data...");
+        System.out.println("Checking/Loading initial match data...");
+        List<MatchSession> existing = matchRepository.findAll();
 
-        MatchSession match1 = new MatchSession(
-                null, "LSG", "RCB", 
-                LocalDate.of(2026, 4, 15), LocalTime.of(19, 30), 
-                "COMPLETED", "/rcb-poster.jpg"
-        );
+        // Seed original IPL matches
+        saveIfNotExist("LSG", "RCB", LocalDate.of(2026, 4, 15), LocalTime.of(19, 30), "COMPLETED", "/rcb-poster.jpg", existing);
+        saveIfNotExist("RCB", "DC", LocalDate.of(2026, 4, 18), LocalTime.of(15, 30), "UPCOMING", "/rcb-poster.jpg", existing);
+        saveIfNotExist("RCB", "GT", LocalDate.of(2026, 4, 24), LocalTime.of(19, 30), "UPCOMING", "/rcb-poster.jpg", existing);
+        saveIfNotExist("DC", "RCB", LocalDate.of(2026, 4, 27), LocalTime.of(19, 30), "UPCOMING", "/rcb-poster.jpg", existing);
+        saveIfNotExist("GT", "RCB", LocalDate.of(2026, 4, 30), LocalTime.of(19, 30), "UPCOMING", "/rcb-poster.jpg", existing);
+        saveIfNotExist("LSG", "RCB", LocalDate.of(2026, 5, 7), LocalTime.of(19, 30), "UPCOMING", "/rcb-poster.jpg", existing);
 
-        MatchSession match2 = new MatchSession(
-                null, "RCB", "DC", 
-                LocalDate.of(2026, 4, 18), LocalTime.of(15, 30), 
-                "UPCOMING", "/rcb-poster.jpg"
-        );
+        // Seed new upcoming India T20 matches (June/July 2026)
+        saveIfNotExist("IND", "IRE", LocalDate.of(2026, 6, 26), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "IRE", LocalDate.of(2026, 6, 28), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ENG", LocalDate.of(2026, 7, 1), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ENG", LocalDate.of(2026, 7, 4), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ENG", LocalDate.of(2026, 7, 7), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ENG", LocalDate.of(2026, 7, 9), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ENG", LocalDate.of(2026, 7, 11), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ZIM", LocalDate.of(2026, 7, 23), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ZIM", LocalDate.of(2026, 7, 25), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
+        saveIfNotExist("IND", "ZIM", LocalDate.of(2026, 7, 26), LocalTime.of(19, 30), "UPCOMING", "/india-poster.png", existing);
 
-        MatchSession match3 = new MatchSession(
-                null, "RCB", "GT", 
-                LocalDate.of(2026, 4, 24), LocalTime.of(19, 30), 
-                "UPCOMING", "/rcb-poster.jpg"
-        );
+        System.out.println("Match data check and seeding complete.");
+    }
 
-        MatchSession match4 = new MatchSession(
-                null, "DC", "RCB", 
-                LocalDate.of(2026, 4, 27), LocalTime.of(19, 30), 
-                "UPCOMING", "/rcb-poster.jpg"
+    private void saveIfNotExist(String team1, String team2, LocalDate date, LocalTime time, String status, String posterUrl, List<MatchSession> existing) {
+        boolean exists = existing.stream().anyMatch(m -> 
+            m.getTeam1().equalsIgnoreCase(team1) && 
+            m.getTeam2().equalsIgnoreCase(team2) && 
+            m.getMatchDate().equals(date)
         );
-
-        MatchSession match5 = new MatchSession(
-                null, "GT", "RCB", 
-                LocalDate.of(2026, 4, 30), LocalTime.of(19, 30), 
-                "UPCOMING", "/rcb-poster.jpg"
-        );
-
-        MatchSession match6 = new MatchSession(
-                null, "LSG", "RCB", 
-                LocalDate.of(2026, 5, 7), LocalTime.of(19, 30), 
-                "UPCOMING", "/rcb-poster.jpg"
-        );
-        
-        matchRepository.saveAll(Arrays.asList(match1, match2, match3, match4, match5, match6));
-        System.out.println("Initial match data loaded.");
+        if (!exists) {
+            matchRepository.save(new MatchSession(null, team1, team2, date, time, status, posterUrl));
+            System.out.println("Saved new match: " + team1 + " vs " + team2 + " on " + date);
+        }
     }
 }

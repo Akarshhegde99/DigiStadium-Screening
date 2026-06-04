@@ -46,7 +46,7 @@ export default function InvoicePage() {
             <div className="flex justify-between items-start border-b border-gray-200 pb-8 mb-8">
                 <div>
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-900 bg-clip-text text-transparent">Harvey's Cafe</h1>
-                    <p className="text-gray-500 text-sm mt-1">IPL Screening Pass</p>
+                    <p className="text-gray-500 text-sm mt-1">Cricket Screening Pass</p>
                 </div>
                 <div className="text-right">
                     <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-1">Invoice / Booking ID</div>
