@@ -12,7 +12,7 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await axios.get(`${API_URL}/matches`);
+        const response = await axios.get(`${API_URL}/matches`, { timeout: 5000 });
         if (response.data && response.data.length > 0) {
             setMatches(response.data);
         } else {

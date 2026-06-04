@@ -12,7 +12,7 @@ export default function MyBookingsPage() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axios.get(`${API_URL}/bookings/my-bookings`);
+        const response = await axios.get(`${API_URL}/bookings/my-bookings`, { timeout: 8000 });
         // Sort bookings by createdAt descending (most recent first)
         const sorted = (response.data || []).sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)

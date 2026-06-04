@@ -7,12 +7,16 @@ const AuthContext = createContext();
 // Setup request interceptor to attach JWT token automatically to secure endpoints
 axios.interceptors.request.use(
   (config) => {
-    const saved = localStorage.getItem('hc_user');
-    if (saved) {
-      const { token } = JSON.parse(saved);
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const saved = localStorage.getItem('hc_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.token) {
+          config.headers.Authorization = `Bearer ${parsed.token}`;
+        }
       }
+    } catch (e) {
+      console.warn("Failed to parse auth token from localStorage", e);
     }
     return config;
   },
