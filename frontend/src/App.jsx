@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { BookingProvider } from './context/BookingContext';
 
@@ -25,6 +25,9 @@ const ProtectedRoute = ({ children }) => {
 function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <nav className="p-4 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
@@ -41,31 +44,33 @@ function Navbar() {
             Cricket Screenings
           </div>
 
-          {user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-300 font-medium bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                Hi, <span className="text-hcRed font-bold">{user.name}</span>
-              </span>
+          {!isAdminRoute && (
+            user ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-300 font-medium bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                  Hi, <span className="text-hcRed font-bold">{user.name}</span>
+                </span>
+                <Link 
+                  to="/bookings" 
+                  className="text-sm font-semibold hover:text-hcRed text-gray-300 transition-colors"
+                >
+                  My Bookings
+                </Link>
+                <button 
+                  onClick={() => { logout(); navigate('/'); }}
+                  className="text-xs font-bold text-gray-400 hover:text-white uppercase bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition-all"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
               <Link 
-                to="/bookings" 
-                className="text-sm font-semibold hover:text-hcRed text-gray-300 transition-colors"
+                to="/auth" 
+                className="btn-primary px-4 py-2 text-sm font-bold rounded-lg shadow-lg hover:shadow-hcRed/20 transition-all"
               >
-                My Bookings
+                Sign In
               </Link>
-              <button 
-                onClick={() => { logout(); navigate('/'); }}
-                className="text-xs font-bold text-gray-400 hover:text-white uppercase bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition-all"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <Link 
-              to="/auth" 
-              className="btn-primary px-4 py-2 text-sm font-bold rounded-lg shadow-lg hover:shadow-hcRed/20 transition-all"
-            >
-              Sign In
-            </Link>
+            )
           )}
         </div>
       </div>
