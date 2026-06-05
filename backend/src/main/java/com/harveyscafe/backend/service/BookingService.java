@@ -53,8 +53,8 @@ public class BookingService {
         // Save initially to generate UUID
         booking = bookingRepository.save(booking);
 
-        // Generate QR code including the UUID
-        String qrData = "harveyscafe:booking:" + booking.getId();
+        // Generate QR code containing the raw UUID
+        String qrData = booking.getId();
         String qrCodeBase64 = qrCodeService.generateQrCodeBase64(qrData);
         booking.setQrCodeData(qrCodeBase64);
 

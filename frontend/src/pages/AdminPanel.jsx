@@ -44,11 +44,12 @@ export default function AdminPanel() {
         html5QrcodeScanner.render(
             (decodedText) => {
                 // Success callback
-                setBookingIdInput(decodedText);
+                const cleanId = extractBookingId(decodedText);
+                setBookingIdInput(cleanId);
                 setScannerEnabled(false);
                 html5QrcodeScanner.clear();
                 // trigger search
-                handleSearch(null, decodedText);
+                handleSearch(null, cleanId);
             },
             (error) => {
                 // Ignore ongoing scanning errors unless critical
@@ -61,10 +62,24 @@ export default function AdminPanel() {
     }
   }, [scannerEnabled]);
 
+  const extractBookingId = (text) => {
+    if (!text) return '';
+    const cleanText = text.trim();
+    if (cleanText.includes('/invoice/')) {
+        const parts = cleanText.split('/invoice/');
+        return parts[parts.length - 1].trim();
+    }
+    if (cleanText.startsWith('harveyscafe:booking:')) {
+        return cleanText.replace('harveyscafe:booking:', '').trim();
+    }
+    return cleanText;
+  };
+
   const handleSearch = async (e, idOverride = null) => {
     if (e) e.preventDefault();
-    const searchId = idOverride || bookingIdInput;
-    if (!searchId || !searchId.trim()) return;
+    const rawId = idOverride || bookingIdInput;
+    const searchId = extractBookingId(rawId);
+    if (!searchId) return;
 
     setLoading(true);
     setError('');
