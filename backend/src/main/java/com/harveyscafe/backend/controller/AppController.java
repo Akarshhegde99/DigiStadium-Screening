@@ -68,6 +68,19 @@ public class AppController {
         return ResponseEntity.notFound().build();
     }
 
+    @PostMapping("/bookings/{id}/check-in")
+    public ResponseEntity<?> checkInBooking(@PathVariable String id) {
+        List<Booking> bookings = bookingRepository.findByIdStartingWithIgnoreCase(id);
+        if (bookings.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Booking booking = bookings.get(0);
+        booking.setStatus("CHECKED_IN");
+        booking.setPaymentStatus("PAID");
+        bookingRepository.save(booking);
+        return ResponseEntity.ok(booking);
+    }
+
     @PostMapping("/payment/create-intent")
     public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody Map<String, Object> body) {
         Double amount = Double.parseDouble(body.get("amount").toString());

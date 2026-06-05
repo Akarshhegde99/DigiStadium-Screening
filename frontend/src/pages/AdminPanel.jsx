@@ -80,6 +80,20 @@ export default function AdminPanel() {
     }
   };
 
+  const handleCheckIn = async () => {
+    if (!booking) return;
+    setLoading(true);
+    setError('');
+    try {
+        const response = await axios.post(`${API_URL}/bookings/${booking.id}/check-in`);
+        setBooking(response.data);
+    } catch (err) {
+        setError('Failed to mark booking as checked in');
+    } finally {
+        setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-xl mx-auto py-8">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
@@ -174,8 +188,12 @@ export default function AdminPanel() {
 
                 {booking.status !== 'CHECKED_IN' && (
                     <div className="p-4 bg-white/5">
-                        <button className="w-full bg-green-600 hover:bg-green-500 font-bold text-white py-4 rounded flex items-center justify-center transition-all">
-                            <CheckCircle size={20} className="mr-2" /> Mark as Checked In
+                        <button 
+                            onClick={handleCheckIn}
+                            disabled={loading}
+                            className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-600 font-bold text-white py-4 rounded flex items-center justify-center transition-all"
+                        >
+                            <CheckCircle size={20} className="mr-2" /> {loading ? 'Processing...' : 'Mark as Checked In'}
                         </button>
                     </div>
                 )}
